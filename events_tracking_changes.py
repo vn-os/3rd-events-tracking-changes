@@ -8,11 +8,16 @@ from filecached import CacheFile
 
 class EventTrackingChanges():
   ''' Event Tracking Changes
+  name  - an unique name for event tracking changes
+  kidx  - include event index to the cache key
+  keys  - include values of keys in event object to the cache key
+  debug - enable debug logging
   '''
 
-  def __init__(self, name, keys=[], debug=False):
+  def __init__(self, name, kidx=True, keys=[], debug=False):
     self.name  = name
     self.keys  = keys
+    self.kidx  = kidx
     self.debug = debug
     self.cache = CacheFile(self.name, self.debug)
     self.cache_events = {}
@@ -46,7 +51,8 @@ class EventTrackingChanges():
     await asyncio.sleep(0) # make sure awaited
 
   async def track_change(self, event_index, events, *args):
-    @cached(cache=self.cache_events, key=lambda self, event_index, events, *args: hashkey(f"{self.name}-{'-'.join(map(str, args))}"))
+    @cached(cache=self.cache_events, key=lambda self, event_index, events, *args:
+      hashkey(f"{self.name}-{str(event_index) if self.kidx else 'x'}-{'-'.join(map(str, args)) if self.keys else 'x'}"))
     async def _track_change(_self, event_index, events, *args):
       try:
         event = events[event_index]
