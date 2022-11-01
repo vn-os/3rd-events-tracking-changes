@@ -9,20 +9,22 @@ from filecached import CacheFile
 class EventTrackingChanges():
   ''' Event Tracking Changes
   name  - an unique name for event tracking changes
+  fnkey - the key that identify the event handler
   kidx  - include event index to the cache key
   keys  - include values of keys in event object to the cache key
   debug - enable debug logging
   '''
 
-  def __init__(self, name, kidx=True, keys=[], debug=False):
+  def __init__(self, name, fnkey="", kidx=True, keys=[], debug=False):
     self.name  = name
+    self.fnkey = fnkey
     self.keys  = keys
     self.kidx  = kidx
     self.debug = debug
     self.cache = CacheFile(self.name, self.debug)
     self.cache_events = {}
-    self.mapping_events = {
-      "momo": self.on_momo_transaction,
+    self.mapping_handlers = {
+      "momo": self.on_momo_handler,
     }
 
   async def on_open(self):
@@ -57,7 +59,7 @@ class EventTrackingChanges():
       try:
         event = events[event_index]
         if event:
-          fn = _self.mapping_events.get(event["partnerCode"])
+          fn = _self.mapping_handlers.get(event.get(self.fnkey, ""), _self.on_default_handler)
           if fn: await fn(event)
         _self.cache.store(_self.cache_events)
       except Exception as e:
@@ -65,5 +67,10 @@ class EventTrackingChanges():
         print(e)
     await _track_change(self, event_index, events, *args)
 
-  async def on_momo_transaction(self, event):
-    print("on_momo_transaction", event["tranId"])
+  async def on_default_handler(self, event):
+    print("on_default_handler", event)
+    await asyncio.sleep(0) # make sure awaited
+
+  async def on_momo_handler(self, event):
+    print("on_momo_handler", event)
+    await asyncio.sleep(0) # make sure awaited
