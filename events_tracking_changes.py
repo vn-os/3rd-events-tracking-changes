@@ -49,7 +49,7 @@ class EventTrackingChanges():
     async def _track_change(_self, event_index, events, event_id):
       try:
         event = events[event_index]
-        if event and "partnerCode" in event.keys():
+        if event:
           fn = _self.mapping_events.get(event["partnerCode"])
           if fn: await fn(event)
         _self.cache.store(_self.cache_events)
