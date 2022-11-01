@@ -44,9 +44,9 @@ class EventTrackingChanges():
       print(e)
     await asyncio.sleep(0) # make sure awaited
 
-  async def track_change(self, event_index, events, event_id):
-    @cached(cache=self.cache_events, key=lambda self, event_index, events, event_id: hashkey(f"{self.name}-{event_id}"))
-    async def _track_change(_self, event_index, events, event_id):
+  async def track_change(self, event_index, events, *args):
+    @cached(cache=self.cache_events, key=lambda self, event_index, events, *args: hashkey(f"{self.name}-{'-'.join(map(str, args))}"))
+    async def _track_change(_self, event_index, events, *args):
       try:
         event = events[event_index]
         if event:
@@ -56,7 +56,7 @@ class EventTrackingChanges():
       except Exception as e:
         _self.cache.store(_self.cache_events)
         print(e)
-    await _track_change(self, event_index, events, event_id)
+    await _track_change(self, event_index, events, *args)
 
   async def on_momo_transaction(self, event):
     print("on_momo_transaction", event["tranId"])
