@@ -12,7 +12,7 @@ with open(file_path, "r", encoding="utf8") as f:
   tranList = json.load(f)["momoMsg"]["tranList"]
 
 from events_tracking_changes import EventTrackingChanges
-etc = EventTrackingChanges("sample", True)
+etc = EventTrackingChanges(name="sample", keys=["user", "tranId"], debug=True)
 asyncio.run(etc.on_open())
 
 n = len(tranList)

@@ -10,8 +10,9 @@ class EventTrackingChanges():
   ''' Event Tracking Changes
   '''
 
-  def __init__(self, name, debug=False):
+  def __init__(self, name, keys=[], debug=False):
     self.name  = name
+    self.keys  = keys
     self.debug = debug
     self.cache = CacheFile(self.name, self.debug)
     self.cache_events = {}
@@ -39,7 +40,7 @@ class EventTrackingChanges():
         num_events = len(events)
         if num_events > 0:
           for i in range(0, num_events):
-            await self.track_change(i, events, events[i]["tranId"])
+            await self.track_change(i, events, *tuple([events[i][key] for key in self.keys]))
     except Exception as e:
       print(e)
     await asyncio.sleep(0) # make sure awaited
