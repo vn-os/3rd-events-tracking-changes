@@ -10,19 +10,18 @@ with open(file_path, "r", encoding="utf8") as f:
 from events_tracking_changes import EventTrackingChanges
 
 class MomoCronJob(EventTrackingChanges):
+  ''' Momo Cron Job - For tracking a new transaction
+  '''
   def __init__(self):
-
-    handlers = {
-      "momo": self.on_received_money_handler,
-    }
-
     super().__init__(
       name="momo-cron-job",
-      fnkey="partnerCode",
-      hdlrs=handlers,
-      kidx=False,
-      keys=["user", "tranId"],
-      debug=True,
+      key_contains_handler_names="partnerCode",
+      use_event_index_in_cache_key=False,
+      use_additional_keys_in_cache_key=["user", "tranId"],
+      enable_debug_logging=True,
+      mapping_handlers={
+        "momo": self.on_received_money_handler,
+      },
     )
 
   async def on_received_money_handler(self, event):

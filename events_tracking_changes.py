@@ -8,21 +8,26 @@ from filecached import CacheFile
 
 class EventTrackingChanges():
   ''' Event Tracking Changes
-  name  - an unique name for event tracking changes
-  fnkey - the key that identify the event handler
-  hdlrs - the mapping of event names and their handlers
-  kidx  - include event index to the cache key
-  keys  - include values of keys in event object to the cache key
-  debug - enable debug logging
+  name - an unique name for event tracking changes
+  key_contains_handler_names - the key that identify the event handler
+  mapping_handlers - a mapping of handler names and their class methods
+  use_event_index_in_cache_key - include event index to the cache key
+  use_additional_keys_in_cache_key - include their values in event object to the cache key
+  enable_debug_logging - enable debug logging
   '''
 
-  def __init__(self, name, fnkey="", hdlrs={}, kidx=True, keys=[], debug=False):
+  def __init__(self, name,
+    key_contains_handler_names="",
+    mapping_handlers={},
+    use_event_index_in_cache_key=True,
+    use_additional_keys_in_cache_key=[],
+    enable_debug_logging=False):
     self.name  = name
-    self.fnkey = fnkey
-    self.keys  = keys
-    self.kidx  = kidx
-    self.debug = debug
-    self.handlers = hdlrs
+    self.fkey  = key_contains_handler_names
+    self.keys  = use_additional_keys_in_cache_key
+    self.kidx  = use_event_index_in_cache_key
+    self.debug = enable_debug_logging
+    self.handlers = mapping_handlers
     self.cache_events = {}
     self.cache = CacheFile(self.name, self.debug)
 
@@ -54,7 +59,7 @@ class EventTrackingChanges():
       try:
         event = events[event_index]
         if event:
-          fn = _self.handlers.get(event.get(self.fnkey, ""), _self.on_default_handler)
+          fn = _self.handlers.get(event.get(self.fkey, ""), _self.on_default_handler)
           if fn: await fn(event)
         _self.cache.store(_self.cache_events)
       except Exception as e:
