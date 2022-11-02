@@ -13,7 +13,12 @@ with open(file_path, "r", encoding="utf8") as f:
 
 from events_tracking_changes import EventTrackingChanges
 etc = EventTrackingChanges(
-  name="sample", fnkey="partnerCode", kidx=False, keys=["user", "tranId"], debug=True)
+  name="sample",
+  fnkey="partnerCode",
+  kidx=False,
+  keys=["user", "tranId"],
+  debug=True,
+)
 
 asyncio.run(etc.on_open())
 
