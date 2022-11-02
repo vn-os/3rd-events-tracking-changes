@@ -10,22 +10,21 @@ class EventTrackingChanges():
   ''' Event Tracking Changes
   name  - an unique name for event tracking changes
   fnkey - the key that identify the event handler
+  hdlrs - the mapping of event names and their handlers
   kidx  - include event index to the cache key
   keys  - include values of keys in event object to the cache key
   debug - enable debug logging
   '''
 
-  def __init__(self, name, fnkey="", kidx=True, keys=[], debug=False):
+  def __init__(self, name, fnkey="", hdlrs={}, kidx=True, keys=[], debug=False):
     self.name  = name
     self.fnkey = fnkey
     self.keys  = keys
     self.kidx  = kidx
     self.debug = debug
-    self.cache = CacheFile(self.name, self.debug)
+    self.handlers = hdlrs
     self.cache_events = {}
-    self.mapping_handlers = {
-      "momo": self.on_momo_handler,
-    }
+    self.cache = CacheFile(self.name, self.debug)
 
   async def start(self):
     if not self.cache.deleted():
@@ -55,7 +54,7 @@ class EventTrackingChanges():
       try:
         event = events[event_index]
         if event:
-          fn = _self.mapping_handlers.get(event.get(self.fnkey, ""), _self.on_default_handler)
+          fn = _self.handlers.get(event.get(self.fnkey, ""), _self.on_default_handler)
           if fn: await fn(event)
         _self.cache.store(_self.cache_events)
       except Exception as e:
@@ -65,8 +64,4 @@ class EventTrackingChanges():
 
   async def on_default_handler(self, event):
     if self.debug: print("on_default_handler", event)
-    await asyncio.sleep(0) # make sure awaited
-
-  async def on_momo_handler(self, event):
-    if self.debug: print("on_momo_handler", event)
     await asyncio.sleep(0) # make sure awaited
