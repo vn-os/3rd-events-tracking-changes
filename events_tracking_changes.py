@@ -68,5 +68,6 @@ class EventTrackingChanges():
     await _track_change(self, event_index, events, *args)
 
   async def on_default_handler(self, event):
-    if self.debug: print("on_default_handler", event)
+    if self.debug:
+      print("on_default_handler", event)
     await asyncio.sleep(0) # make sure awaited
