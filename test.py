@@ -20,12 +20,12 @@ etc = EventTrackingChanges(
   debug=True,
 )
 
-asyncio.run(etc.on_open())
+asyncio.run(etc.start())
 
 for i in range(1, len(tranList)):
   print("".center(80, "-"))
   events = tranList[0:i]
-  asyncio.run(etc.on_events(events))
+  asyncio.run(etc.process(events))
   sleep(3)
 
-asyncio.run(etc.on_close())
+asyncio.run(etc.stop())

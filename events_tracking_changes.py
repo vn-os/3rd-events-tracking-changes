@@ -27,21 +27,17 @@ class EventTrackingChanges():
       "momo": self.on_momo_handler,
     }
 
-  async def on_open(self):
-    print("on_open -> STARTED")
-    if self.cache.deleted():
-      print("on_open -> FINISHED")
-    else:
+  async def start(self):
+    if not self.cache.deleted():
       self.cache_events = self.cache.load()
     await asyncio.sleep(0) # make sure awaited
 
-  async def on_close(self):
+  async def stop(self):
     if not self.cache.deleted():
       self.cache.store(self.cache_events)
-    print("on_close -> FINISHED")
     await asyncio.sleep(0) # make sure awaited
 
-  async def on_events(self, events):
+  async def process(self, events):
     try:
       if events:
         num_events = len(events)
@@ -68,9 +64,9 @@ class EventTrackingChanges():
     await _track_change(self, event_index, events, *args)
 
   async def on_default_handler(self, event):
-    print("on_default_handler", event)
+    if self.debug: print("on_default_handler", event)
     await asyncio.sleep(0) # make sure awaited
 
   async def on_momo_handler(self, event):
-    print("on_momo_handler", event)
+    if self.debug: print("on_momo_handler", event)
     await asyncio.sleep(0) # make sure awaited
