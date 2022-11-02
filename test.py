@@ -9,8 +9,8 @@ with open(file_path, "r", encoding="utf8") as f:
 
 from events_tracking_changes import EventTrackingChanges
 
-class MomoCronJob(EventTrackingChanges):
-  ''' Momo Cron Job - For tracking a new transaction
+class MomoWalletCronJob(EventTrackingChanges):
+  ''' Momo Wallet Cron Job - For tracking a new transaction
   '''
   def __init__(self):
     super().__init__(
@@ -29,7 +29,7 @@ class MomoCronJob(EventTrackingChanges):
       print("on_received_money_handler", json.dumps(event, indent=2))
     await asyncio.sleep(0)  # make sure awaited
 
-momo_cron_job = MomoCronJob()
+momo_cron_job = MomoWalletCronJob()
 
 asyncio.run(momo_cron_job.start())
 
