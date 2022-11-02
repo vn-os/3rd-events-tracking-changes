@@ -14,7 +14,7 @@ class MomoWalletCronJob(EventTrackingChanges):
   '''
   def __init__(self):
     super().__init__(
-      name="momo-cron-job",
+      name="momo-wallet-cron-job",
       key_contains_handler_names="partnerCode",
       use_event_index_in_cache_key=False,
       use_additional_keys_in_cache_key=["user", "tranId"],
